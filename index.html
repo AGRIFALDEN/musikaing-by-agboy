@@ -2,7 +2,8 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<title>MUSIKAING BY AGBOY</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MUSIKAING</title>
 
 <style>
 @keyframes rgb {
@@ -10,29 +11,32 @@
   100% { filter: hue-rotate(360deg); }
 }
 
+/* ===== GLOBAL ===== */
 body {
   margin: 0;
-  height: 100vh;
+  min-height: 100vh;
   background: radial-gradient(circle, #050505, #000);
   display: flex;
   justify-content: center;
   align-items: center;
   font-family: Arial, sans-serif;
   color: white;
-  overflow: hidden;
+  overflow-x: hidden;
 }
 
 .rgb-bg {
-  position: absolute;
+  position: fixed;
   inset: 0;
   background: linear-gradient(45deg, red, cyan, lime, magenta, blue);
   animation: rgb 10s linear infinite;
   opacity: 0.15;
+  z-index: -1;
 }
 
+/* ===== PLAYER ===== */
 .player {
-  position: relative;
   width: 380px;
+  max-width: 95%;
   background: rgba(10,10,10,0.85);
   padding: 20px;
   border-radius: 20px;
@@ -66,22 +70,29 @@ h2 {
   margin-bottom: 10px;
 }
 
+/* ===== CONTROLS ===== */
 .controls {
   display: flex;
   justify-content: center;
-  gap: 15px;
+  gap: 12px;
   margin-bottom: 10px;
+  flex-wrap: wrap;
 }
 
 .controls button {
   background: black;
   color: cyan;
   border: 2px solid cyan;
-  padding: 8px 16px;
-  font-size: 16px;
-  border-radius: 10px;
+  padding: 9px 16px;
+  font-size: 15px;
+  border-radius: 12px;
   cursor: pointer;
   box-shadow: 0 0 10px cyan;
+}
+
+.controls button.active {
+  background: cyan;
+  color: black;
 }
 
 .controls button:hover {
@@ -98,6 +109,16 @@ audio {
   font-size: 11px;
   color: #666;
 }
+
+/* ===== HANDPHONE ===== */
+@media (max-width: 480px) {
+  h1 { font-size: 22px; }
+  h2 { font-size: 14px; }
+  .controls button {
+    padding: 8px 14px;
+    font-size: 14px;
+  }
+}
 </style>
 </head>
 
@@ -106,23 +127,21 @@ audio {
 <div class="rgb-bg"></div>
 
 <div class="player">
-  <!-- COVER -->
   <img id="cover" src="cover1.jpg" class="cover">
 
   <h1 id="title">Sejauh Ini</h1>
-  <h2>MUSIKAING BY AGBOY</h2>
+  <h2>MUSIKAING</h2>
   <div class="credit" id="credit">Credit By Agrifalden</div>
 
   <div class="controls">
     <button onclick="prevSong()">⏮</button>
+    <button onclick="toggleLoop()" id="loopBtn">🔁 OFF</button>
     <button onclick="nextSong()">⏭</button>
   </div>
 
   <audio id="audio" controls></audio>
 
-  <div class="footer">
-    © 2025 MUSIKAING BY AGBOY
-  </div>
+  <div class="footer">© 2025 MUSIKAING - BY AGBOY</div>
 </div>
 
 <script>
@@ -142,17 +161,20 @@ const songs = [
 ];
 
 let index = 0;
+let isLoop = false;
 
 const audio = document.getElementById("audio");
 const title = document.getElementById("title");
 const credit = document.getElementById("credit");
 const cover = document.getElementById("cover");
+const loopBtn = document.getElementById("loopBtn");
 
 function loadSong(i) {
   title.textContent = songs[i].title;
   credit.textContent = songs[i].credit;
   audio.src = songs[i].src;
   cover.src = songs[i].cover;
+  audio.loop = isLoop;
   audio.play();
 }
 
@@ -164,6 +186,13 @@ function nextSong() {
 function prevSong() {
   index = (index - 1 + songs.length) % songs.length;
   loadSong(index);
+}
+
+function toggleLoop() {
+  isLoop = !isLoop;
+  audio.loop = isLoop;
+  loopBtn.textContent = isLoop ? "🔁 ON" : "🔁 OFF";
+  loopBtn.classList.toggle("active", isLoop);
 }
 
 loadSong(index);
